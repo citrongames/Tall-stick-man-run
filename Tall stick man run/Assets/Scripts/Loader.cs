@@ -10,6 +10,7 @@ public class Loader : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        Application.targetFrameRate = Screen.currentResolution.refreshRate;
         if (_levelIndex > 0)
             StartCoroutine(LoadLevel(_levelIndex));
     }
