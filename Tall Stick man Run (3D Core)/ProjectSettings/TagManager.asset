@@ -5,6 +5,8 @@ TagManager:
   serializedVersion: 2
   tags:
   - UI_Interactable
+  - LevelFinish
+  - Diamonds
   layers:
   - Default
   - TransparentFX

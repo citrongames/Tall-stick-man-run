@@ -2,11 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.SceneManagement;
 using NewTypes;
+using TMPro;
 
 public class LevelManager : MonoBehaviour
 {
     [SerializeField] private GameData _gameData;
+    [SerializeField] private TextMeshProUGUI _tmpText;
     [SerializeField] private List<GameObject> _disableIngame;
     private LevelStateEnum _levelState;
 
@@ -21,12 +24,36 @@ public class LevelManager : MonoBehaviour
     {
         _levelState = LevelStateEnum.WaitingTap;
         _touchInfo = new TouchInfo(Vector3.zero, Vector3.zero, false, TouchPhase.Canceled);
+        _tmpText.text = _gameData.Diamonds.ToString();
     }
 
     void Update()
     {
         ReadInput();
         LevelStateManager();
+    }
+
+    private void LoadNextLevel()
+    {
+        int nextLevel = SceneManager.GetActiveScene().buildIndex + 1;
+        if (nextLevel > (SceneManager.sceneCountInBuildSettings - 1))
+        {
+            StartCoroutine(LoadLevel(1));
+        }
+        else
+        {
+            StartCoroutine(LoadLevel(nextLevel));
+        }        
+    }
+
+    IEnumerator LoadLevel(int levelIndex)
+    {
+        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(levelIndex);
+
+        while (asyncLoad.isDone)
+        {
+            yield return null;
+        }
     }
 
     void LevelStateManager()
@@ -43,7 +70,6 @@ public class LevelManager : MonoBehaviour
                 if (_touchInfo.Phase == TouchPhase.Began && !_touchInfo.IsInteractableUI)
                 {
                     //run anim
-                    _playerScript.Move(Vector3.forward + new Vector3(_touchInfo.Direction.x / 300, 0, 0));
                     _playerAnimator.SetBool("IsRunning", true);
                     
                 }
@@ -52,9 +78,9 @@ public class LevelManager : MonoBehaviour
                     //idle anim
                     _playerAnimator.SetBool("IsRunning", false);
                 }
-                else if (_touchInfo.Phase == TouchPhase.Moved && !_touchInfo.IsInteractableUI)
+                else if ((_touchInfo.Phase == TouchPhase.Moved || _touchInfo.Phase == TouchPhase.Stationary) && !_touchInfo.IsInteractableUI)
                 {
-                    _playerScript.Move(Vector3.forward + new Vector3(_touchInfo.Direction.x / 300, 0, 0));
+                    _playerScript.Move(_touchInfo.Direction);
                 }
                 break;
             case LevelStateEnum.Settings:
@@ -64,11 +90,12 @@ public class LevelManager : MonoBehaviour
             case LevelStateEnum.Lost:
                 break;
             case LevelStateEnum.Won:
+                
                 break;
         }
     }
 
-    private void ChangeLevelState(LevelStateEnum newLevelState)
+    public void ChangeLevelState(LevelStateEnum newLevelState)
     {
         //check old level state and based on it clean up some things
         switch (_levelState)
@@ -83,6 +110,10 @@ public class LevelManager : MonoBehaviour
                 }
                 break;
             case LevelStateEnum.Ingame:
+                if (newLevelState == LevelStateEnum.Won)
+                {
+                    LoadNextLevel();
+                }
                 break;
             case LevelStateEnum.Settings:
                 break;
@@ -94,6 +125,11 @@ public class LevelManager : MonoBehaviour
                 break;
         }
         _levelState = newLevelState;
+    }
+
+    public void AddDiamonds(int count)
+    {
+        _gameData.Diamonds += count;
     }
     private void ReadInput()
     {
@@ -129,10 +165,11 @@ public class LevelManager : MonoBehaviour
         {
             case TouchPhase.Began:
                 _touchInfo.StartPos = Camera.main.ScreenToWorldPoint(new Vector3(touchPos.x, touchPos.y, Camera.main.farClipPlane));
+                //Debug.Log(_touchInfo.StartPos);
                 break;
+            case TouchPhase.Stationary:
             case TouchPhase.Moved:
-                _touchInfo.Direction = Camera.main.ScreenToWorldPoint(new Vector3(touchPos.x, touchPos.y, Camera.main.farClipPlane)) - _touchInfo.StartPos;
-                Debug.Log(_touchInfo.Direction);
+                _touchInfo.Direction = Camera.main.ScreenToWorldPoint(new Vector3(touchPos.x, touchPos.y, Camera.main.farClipPlane)) - _touchInfo.StartPos;               
                 break;
             case TouchPhase.Ended:
                 

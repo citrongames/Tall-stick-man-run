@@ -12,3 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 696e67714031bc44aab8e72f490775c2, type: 3}
   m_Name: GameData
   m_EditorClassIdentifier: 
+  _diamonds: 10

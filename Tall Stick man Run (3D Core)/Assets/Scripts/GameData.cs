@@ -6,7 +6,12 @@ using NewTypes;
 [CreateAssetMenu(fileName = "GameData", menuName = "ScriptableObjects/GameData", order = 2)]
 public class GameData : ScriptableObject
 {
-    private int _diamonds;
+    [SerializeField] private int _diamonds;
+    public int Diamonds 
+    {
+        get => _diamonds;
+        set => _diamonds = value;
+    }
     private int _levelNum;
     private int _playerMaterial;
     private int _playerHat;

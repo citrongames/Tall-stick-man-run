@@ -26,7 +26,7 @@ public class FPSCounter : MonoBehaviour
 
     void OnGUI()
     {
-        Rect rect = new Rect(10, 10, _width, _fontSize);
+        Rect rect = new Rect(10, 400, _width, _fontSize);
         _guiStyle.alignment = TextAnchor.UpperLeft;
         _guiStyle.fontSize = _fontSize;
         _guiStyle.normal.textColor = Color.white;
