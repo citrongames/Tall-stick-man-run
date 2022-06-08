@@ -90,7 +90,7 @@ public class LevelManager : MonoBehaviour
             case LevelStateEnum.Lost:
                 break;
             case LevelStateEnum.Won:
-                
+                _playerAnimator.SetBool("IsWon", true);
                 break;
         }
     }
@@ -112,7 +112,8 @@ public class LevelManager : MonoBehaviour
             case LevelStateEnum.Ingame:
                 if (newLevelState == LevelStateEnum.Won)
                 {
-                    LoadNextLevel();
+                    //LoadNextLevel();
+                    Invoke("LoadNextLevel", 2);
                 }
                 break;
             case LevelStateEnum.Settings:

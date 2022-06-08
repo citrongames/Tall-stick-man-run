@@ -8,6 +8,7 @@ public class Player : MonoBehaviour, IPlayer
     [SerializeField] private int _rotationSpeed;
     [SerializeField] private LevelManager _levelManager;
     [SerializeField] private Transform _model;
+    [SerializeField] private List<GameObject> _bodyParts = new List<GameObject>();
     private bool _isMoving = false;
     private Rigidbody _rigidBody;
     private Vector3 _position;
@@ -37,8 +38,20 @@ public class Player : MonoBehaviour, IPlayer
     }
     public void ChangeWidth()
     {
-
+        foreach(GameObject bodyPart in _bodyParts)
+        {
+            bodyPart.transform.localScale += new Vector3(0.1f, 0.1f, 0);
+        }
     }
+
+    private void Update() 
+    {
+        if(Input.GetKeyDown("s"))
+        {
+            ChangeWidth();
+        }    
+    }
+
     public void Finished()
     {
 
@@ -50,11 +63,7 @@ public class Player : MonoBehaviour, IPlayer
         if (_isMoving)
         {
             _rigidBody.velocity = _position * _speed;
-            //_rigidBody.MovePosition(transform.position + (_position * Time.deltaTime * _speed)); 
-            //_rigidBody.MovePosition(transform.position + Vector3.left);
-            //create the rotation we need to be in to look at the target
             Quaternion _lookRotation = Quaternion.LookRotation(_position);    
-            //rotate us over time according to speed until we are in the required rotation
             _model.rotation = Quaternion.Slerp(transform.rotation, _lookRotation, Time.fixedDeltaTime * _speed);
 
             _isMoving = false;  
@@ -67,6 +76,7 @@ public class Player : MonoBehaviour, IPlayer
         {
             case "LevelFinish":
                 _levelManager.ChangeLevelState(NewTypes.LevelStateEnum.Won);
+                other.GetComponent<Finish>().PlayConfetti();
                 break;
             case "Diamonds":
                 other.GetComponent<Diamond>().Collect();
