@@ -26,4 +26,10 @@ namespace NewTypes
         public bool IsInteractableUI {get; set;}
         public TouchPhase Phase {get; set;}
     }
+
+    public enum GateModificatorType
+    {
+        Width,
+        Height,
+    }
 }
