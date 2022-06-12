@@ -8,10 +8,12 @@ public class Player : MonoBehaviour
     [SerializeField] private Texture _textureGood;
     [SerializeField] private Texture _textureBad;
     [SerializeField] private float _returnTextureTime;
-    [SerializeField] private int _speed;
-    [SerializeField] private int _rotationSpeed;
+    [SerializeField] private float _speed;
+    [SerializeField] private float _rotationSpeed;
+    [SerializeField] private float _headForce;
     [SerializeField] private LevelManager _levelManager;
     [SerializeField] private Transform _model;
+    [SerializeField] private GameObject _head;
     [SerializeField] private List<GameObject> _bodyParts = new List<GameObject>();
     private Queue<float> _widthForChange = new Queue<float>();
     private Queue<float> _heightForChange = new Queue<float>();
@@ -37,6 +39,7 @@ public class Player : MonoBehaviour
     private MeshRenderer _meshRenderer;
     private Texture _origTexture;
     private ParticleSystem _particle;
+    private CapsuleCollider _collider;
     
     void Start() 
     {
@@ -47,11 +50,13 @@ public class Player : MonoBehaviour
         _meshRenderer = GetComponentInChildren<MeshRenderer>();
         _origTexture = _meshRenderer.sharedMaterial.GetTexture("_MainTex");
         _particle = GetComponent<ParticleSystem>();
+        _collider = GetComponent<CapsuleCollider>();
     }
     public void Move(Vector3 position)
     {
         _isMoving = true;
-        _position = Vector3.forward + new Vector3(position.x / _rotationSpeed, 0, 0);
+        _position = Vector3.forward + new Vector3(position.x * _rotationSpeed, 0, 0);
+        //Debug.Log("Normalize pos: " + _position);
     }
     public void Jump()
     {
@@ -60,6 +65,15 @@ public class Player : MonoBehaviour
     public void Hit()
     {
 
+    }
+    public void Lost()
+    {
+        _particle.Stop();
+        GameObject head = Instantiate(_head, _head.transform.position, transform.rotation);
+        head.AddComponent<SphereCollider>();
+        //Debug.Log("Head force: " + _position.normalized);
+        head.AddComponent<Rigidbody>().AddForce(_position.normalized * _headForce, ForceMode.Impulse);   
+        _head.SetActive(false);    
     }
 
 #region HEIGHT_CHANGE
@@ -89,6 +103,8 @@ public class Player : MonoBehaviour
                 _oldBodyMeshPosition.y - _height / 2, _heightBodyMesh.localPosition.z);
             _heightBodyMesh.localScale = new Vector3(_heightBodyMesh.localScale.x, 
                 _heightBodyMesh.localScale.y, _oldBodyMeshScale.z + _height / 3);
+            _collider.height += _heightStep;
+            _collider.center += new Vector3(0, _heightStep / 2, 0);
         }
         else
         {
@@ -111,6 +127,21 @@ public class Player : MonoBehaviour
         _heightBodyBone.localPosition = new Vector3(_heightBodyBone.localPosition.x, newHeight, _heightBodyBone.localPosition.z);
         _heightBodyBone.localRotation = new Quaternion(degrees * addAngles, 
             _heightBodyBone.localRotation.y, _heightBodyBone.localRotation.z, _heightBodyBone.localRotation.w);
+    }
+    private void ChangeHeightFixSize()
+    {
+        float degrees = 0;
+        int addAngles = 1;
+        if (_heightBodyBone.localRotation.x  < 0)
+            addAngles = -1;
+        
+        degrees = _heightBodyBone.localRotation.x * addAngles;  
+        float c = Mathf.Tan(degrees) * _origHeight;
+        Debug.Log("c1 " + c);
+        float newHeight = _origHeight + _height;
+        float newC = newHeight * Mathf.Tan(degrees);
+        Debug.Log("c2 " + newC);
+        _heightBodyBone.localPosition = new Vector3(_heightBodyBone.localPosition.x, newHeight, (newC - c) * 2 * addAngles);
     }
 #endregion
 
@@ -135,6 +166,8 @@ public class Player : MonoBehaviour
 
     private void ChangeWidth(float widthStep)
     {
+        _collider.radius += widthStep;
+        if (_collider.radius <= 0) _collider.enabled = false;
         foreach(GameObject bodyPart in _bodyParts)
         {
             bodyPart.transform.localScale += new Vector3(widthStep, widthStep, 0);
@@ -142,6 +175,9 @@ public class Player : MonoBehaviour
             {
                 _changeWidth = false;
                 bodyPart.SetActive(false);
+                _widthForChange.Clear();
+                _collider.enabled = false;
+                _levelManager.ChangeLevelState(LevelStateEnum.Lost);
             }
         }
     }
@@ -217,14 +253,13 @@ public class Player : MonoBehaviour
 
     }
     void FixedUpdate() 
-    {
-        
+    {      
         if (_isMoving)
         {
+            //_rigidBody.MovePosition(transform.position + _position * Time.fixedDeltaTime * _speed);
             _rigidBody.velocity = _position * _speed;
-            Quaternion _lookRotation = Quaternion.LookRotation(_position);    
-            _model.rotation = Quaternion.Slerp(transform.rotation, _lookRotation, Time.fixedDeltaTime * _speed);
-
+            _model.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(_position), Time.fixedDeltaTime * _speed);
+            //Debug.Log("Move to pos: " + _position);
             _isMoving = false;  
         } 
     }
@@ -261,8 +296,18 @@ public class Player : MonoBehaviour
                 }
                 Destroy(other.gameObject);
                 break;
+            case "Bound":
+                break;
             default:
                 Debug.Log("Hit: " + other.tag);
+                break;
+        }
+    }
+    private void OnTriggerStay(Collider other) 
+    {
+        switch (other.tag)
+        {
+            case "Bound":
                 break;
         }
     }

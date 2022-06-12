@@ -8,6 +8,7 @@ TagManager:
   - LevelFinish
   - Diamonds
   - Gate
+  - Bound
   layers:
   - Default
   - TransparentFX

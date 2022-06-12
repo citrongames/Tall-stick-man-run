@@ -9,7 +9,7 @@ public class Loader : MonoBehaviour
     void Start()
     {
         Application.targetFrameRate = Screen.currentResolution.refreshRate;
-        Application.targetFrameRate = 60;
+        //Application.targetFrameRate = 60;
         if (_levelIndex > 0)
             StartCoroutine(LoadLevel(_levelIndex));
     }

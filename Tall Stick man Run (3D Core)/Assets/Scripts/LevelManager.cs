@@ -11,6 +11,8 @@ public class LevelManager : MonoBehaviour
     [SerializeField] private GameData _gameData;
     [SerializeField] private TextMeshProUGUI _tmpText;
     [SerializeField] private List<GameObject> _disableIngame;
+    [SerializeField] private List<GameObject> _enableLost;
+    [SerializeField] private List<GameObject> _disableLost;
     private LevelStateEnum _levelState;
 
     [SerializeField] private Animator _playerAnimator;
@@ -46,6 +48,10 @@ public class LevelManager : MonoBehaviour
         }        
     }
 
+    private void ReloadLevel()
+    {
+        StartCoroutine(LoadLevel(SceneManager.GetActiveScene().buildIndex));
+    }
     IEnumerator LoadLevel(int levelIndex)
     {
         AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(levelIndex);
@@ -88,6 +94,7 @@ public class LevelManager : MonoBehaviour
             case LevelStateEnum.Shop:
                 break;
             case LevelStateEnum.Lost:
+                
                 break;
             case LevelStateEnum.Won:
                 _playerAnimator.SetBool("IsWon", true);
@@ -114,6 +121,19 @@ public class LevelManager : MonoBehaviour
                 {
                     //LoadNextLevel();
                     Invoke("LoadNextLevel", 2);
+                }
+                if (newLevelState == LevelStateEnum.Lost)
+                {
+                    _playerScript.Lost();
+                    foreach(GameObject gameObject in _enableLost)
+                    {
+                        gameObject.SetActive(true);
+                    }
+                    foreach(GameObject gameObject in _disableLost)
+                    {
+                        gameObject.SetActive(false);
+                    }
+                    Invoke("ReloadLevel", 2);
                 }
                 break;
             case LevelStateEnum.Settings:
@@ -165,12 +185,13 @@ public class LevelManager : MonoBehaviour
         switch (touchPhase)
         {
             case TouchPhase.Began:
-                _touchInfo.StartPos = Camera.main.ScreenToWorldPoint(new Vector3(touchPos.x, touchPos.y, Camera.main.farClipPlane));
-                //Debug.Log(_touchInfo.StartPos);
+                _touchInfo.StartPos = Camera.main.ScreenToWorldPoint(new Vector3(touchPos.x, touchPos.y, Camera.main.farClipPlane)).normalized;
+                //Debug.Log("Start pos: " + _touchInfo.StartPos);
                 break;
             case TouchPhase.Stationary:
             case TouchPhase.Moved:
-                _touchInfo.Direction = Camera.main.ScreenToWorldPoint(new Vector3(touchPos.x, touchPos.y, Camera.main.farClipPlane)) - _touchInfo.StartPos;               
+                _touchInfo.Direction = Camera.main.ScreenToWorldPoint(new Vector3(touchPos.x, touchPos.y, Camera.main.farClipPlane)).normalized - _touchInfo.StartPos;  
+                //Debug.Log("Move pos: " + _touchInfo.Direction);        
                 break;
             case TouchPhase.Ended:
                 
