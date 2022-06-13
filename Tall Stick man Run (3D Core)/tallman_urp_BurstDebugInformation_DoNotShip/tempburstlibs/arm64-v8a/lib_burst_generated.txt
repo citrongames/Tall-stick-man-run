@@ -158,12 +158,12 @@ Library: lib_burst_generated
 --root-assembly=D:\1.Distr\Unity\GitHub\Tall stick man run\Tall-stick-man-run\Tall stick man run (URP)\Temp\StagingArea\Data\Managed\Unity.Services.Core.Analytics.dll
 --root-assembly=D:\1.Distr\Unity\GitHub\Tall stick man run\Tall-stick-man-run\Tall stick man run (URP)\Temp\StagingArea\Data\Managed\Unity.Services.Core.Scheduler.dll
 --root-assembly=D:\1.Distr\Unity\GitHub\Tall stick man run\Tall-stick-man-run\Tall stick man run (URP)\Temp\StagingArea\Data\Managed\Unity.Services.Core.Registration.dll
+--root-assembly=D:\1.Distr\Unity\GitHub\Tall stick man run\Tall-stick-man-run\Tall stick man run (URP)\Temp\StagingArea\Data\Managed\Assembly-CSharp.dll
 --root-assembly=D:\1.Distr\Unity\GitHub\Tall stick man run\Tall-stick-man-run\Tall stick man run (URP)\Temp\StagingArea\Data\Managed\Unity.Services.Core.Device.dll
 --root-assembly=D:\1.Distr\Unity\GitHub\Tall stick man run\Tall-stick-man-run\Tall stick man run (URP)\Temp\StagingArea\Data\Managed\Unity.Services.Core.Threading.dll
 --root-assembly=D:\1.Distr\Unity\GitHub\Tall stick man run\Tall-stick-man-run\Tall stick man run (URP)\Temp\StagingArea\Data\Managed\Unity.Services.Core.Networking.dll
 --root-assembly=D:\1.Distr\Unity\GitHub\Tall stick man run\Tall-stick-man-run\Tall stick man run (URP)\Temp\StagingArea\Data\Managed\Unity.Services.Core.dll
 --root-assembly=D:\1.Distr\Unity\GitHub\Tall stick man run\Tall-stick-man-run\Tall stick man run (URP)\Temp\StagingArea\Data\Managed\Unity.RenderPipelines.Core.ShaderLibrary.dll
---root-assembly=D:\1.Distr\Unity\GitHub\Tall stick man run\Tall-stick-man-run\Tall stick man run (URP)\Temp\StagingArea\Data\Managed\Assembly-CSharp.dll
 --root-assembly=D:\1.Distr\Unity\GitHub\Tall stick man run\Tall-stick-man-run\Tall stick man run (URP)\Temp\StagingArea\Data\Managed\Unity.Services.Core.Configuration.dll
 --root-assembly=D:\1.Distr\Unity\GitHub\Tall stick man run\Tall-stick-man-run\Tall stick man run (URP)\Temp\StagingArea\Data\Managed\Unity.RenderPipelines.Universal.Shaders.dll
 --root-assembly=D:\1.Distr\Unity\GitHub\Tall stick man run\Tall-stick-man-run\Tall stick man run (URP)\Temp\StagingArea\Data\Managed\Unity.RenderPipelines.ShaderGraph.ShaderGraphLibrary.dll
