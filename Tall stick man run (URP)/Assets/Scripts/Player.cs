@@ -5,9 +5,10 @@ using NewTypes;
 
 public class Player : MonoBehaviour
 {
-    [SerializeField] private Texture _textureGood;
-    [SerializeField] private Texture _textureBad;
-    [SerializeField] private float _returnTextureTime;
+    [SerializeField] private Color _defaultColor;
+    [SerializeField] private Color _colorGood;
+    [SerializeField] private Color _colorBad;
+    [SerializeField] private float _returnColorTime;
     [SerializeField] private float _speed;
     [SerializeField] private float _rotationSpeed;
     [SerializeField] private float _headForce;
@@ -37,9 +38,11 @@ public class Player : MonoBehaviour
     private Rigidbody _rigidBody;
     private Vector3 _position;
     private MeshRenderer _meshRenderer;
-    private Texture _origTexture;
     private ParticleSystem _particle;
     private CapsuleCollider _collider;
+    [SerializeField] private float _capsuleBarrierMultiplyer;
+    [SerializeField] private GameObject _body;
+    private int _secondCollision = 0;
     
     void Start() 
     {
@@ -48,7 +51,6 @@ public class Player : MonoBehaviour
         _oldBodyMeshPosition = _heightBodyMesh.localPosition;
         _oldBodyMeshScale = _heightBodyMesh.localScale;
         _meshRenderer = GetComponentInChildren<MeshRenderer>();
-        _origTexture = _meshRenderer.sharedMaterial.GetTexture("_BaseMap");
         _particle = GetComponent<ParticleSystem>();
         _collider = GetComponent<CapsuleCollider>();
     }
@@ -62,9 +64,13 @@ public class Player : MonoBehaviour
     {
 
     }
-    public void Hit()
+    private void Hit(float value)
     {
-
+        if (value >= 0)
+            _meshRenderer.sharedMaterial.SetColor("_BaseColor", _colorGood);
+        else
+            _meshRenderer.sharedMaterial.SetColor("_BaseColor", _colorBad);
+        Invoke("ReturnColor", _returnColorTime);
     }
     public void Lost()
     {
@@ -72,7 +78,9 @@ public class Player : MonoBehaviour
         GameObject head = Instantiate(_head, _head.transform.position, transform.rotation);
         head.AddComponent<SphereCollider>();
         //Debug.Log("Head force: " + _position.normalized);
-        head.AddComponent<Rigidbody>().AddForce(_position.normalized * _headForce, ForceMode.Impulse);   
+        head.AddComponent<Rigidbody>().AddForce(_position.normalized * _headForce, ForceMode.Impulse);
+        head.GetComponent<Rigidbody>().interpolation = RigidbodyInterpolation.Interpolate;   
+        head.layer = 9;
         _head.SetActive(false);    
     }
 
@@ -93,6 +101,7 @@ public class Player : MonoBehaviour
     public void AddHeight(float height)
     {
         _heightForChange.Enqueue(height);
+        Hit(height);
     }
     private void ChangeHeight(float _heightStep)
     {
@@ -162,6 +171,7 @@ public class Player : MonoBehaviour
     public void AddWidth(float width)
     {
         _widthForChange.Enqueue(width);
+        Hit(width);
     }
 
     private void ChangeWidth(float widthStep)
@@ -256,7 +266,6 @@ public class Player : MonoBehaviour
     {      
         if (_isMoving)
         {
-            //_rigidBody.MovePosition(transform.position + _position * Time.fixedDeltaTime * _speed);
             _rigidBody.velocity = _position * _speed;
             _model.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(_position), Time.fixedDeltaTime * _speed);
             //Debug.Log("Move to pos: " + _position);
@@ -277,12 +286,6 @@ public class Player : MonoBehaviour
             case "Gate":
                 Gate gate = other.GetComponent<Gate>();
 
-                if (gate.Value >= 0)
-                    _meshRenderer.sharedMaterial.SetTexture("_BaseMap", _textureGood);
-                else
-                    _meshRenderer.sharedMaterial.SetTexture("_BaseMap", _textureBad);
-                Invoke("ReturnTexture", _returnTextureTime);
-
                 _particle.Play();
                 
                 switch (gate.Type)
@@ -296,24 +299,34 @@ public class Player : MonoBehaviour
                 }
                 Destroy(other.gameObject);
                 break;
-            case "Bound":
+            case "Roadblock":
+                Roadblock roadblock = other.GetComponent<Roadblock>();
+                roadblock.Explode(new Vector3(transform.position.x, 0, transform.position.z));
+                AddWidth(roadblock.Damage);
+                AddHeight(roadblock.Damage);
+                break;
+            case "Barrier":
+                if (_secondCollision > 1) _secondCollision = 0;
+                if (_secondCollision == 1)
+                {
+                    GameObject body = Instantiate(_body, other.ClosestPoint(transform.position), _body.transform.rotation);
+                    body.transform.localScale = new Vector3(body.transform.localScale.x, body.transform.localScale.y, _collider.transform.localScale.z * _capsuleBarrierMultiplyer);
+                    body.AddComponent<Rigidbody>().AddForce(Vector3.back * _headForce, ForceMode.Impulse);
+                    body.GetComponent<Rigidbody>().interpolation = RigidbodyInterpolation.Interpolate;   
+                    body.layer = 9;                    
+                }
+                Barrier barrier = other.GetComponentInParent<Barrier>();
+                AddHeight(barrier.Damage / 2);
+                _secondCollision++;
                 break;
             default:
-                Debug.Log("Hit: " + other.tag);
-                break;
-        }
-    }
-    private void OnTriggerStay(Collider other) 
-    {
-        switch (other.tag)
-        {
-            case "Bound":
+                Debug.Log("default");
                 break;
         }
     }
 
-    void ReturnTexture()
+    void ReturnColor()
     {
-        _meshRenderer.sharedMaterial.SetTexture("_BaseMap", _origTexture);
+        _meshRenderer.sharedMaterial.SetColor("_BaseColor", _defaultColor);
     }
 }

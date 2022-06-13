@@ -10,15 +10,6 @@ public class FPSCounter : MonoBehaviour
     private int _width;
     private int _height;
 
-    /// <summary>
-    /// Awake is called when the script instance is being loaded.
-    /// </summary>
-    void Awake()
-    {
-        QualitySettings.vSyncCount = 0;
-        Application.targetFrameRate = 60;
-    }  
-    // Use this for initialization
     void Start()
     {
         DontDestroyOnLoad(this.gameObject);
@@ -26,8 +17,6 @@ public class FPSCounter : MonoBehaviour
         _height = Screen.height;
     }
 
-
-    // Update is called once per frame
     void Update()
     {
         _deltaTime += (Time.unscaledDeltaTime - _deltaTime) * 0.1f;

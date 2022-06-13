@@ -9,6 +9,8 @@ TagManager:
   - Diamonds
   - Gate
   - Bound
+  - Roadblock
+  - Barrier
   layers:
   - Default
   - TransparentFX
@@ -16,10 +18,10 @@ TagManager:
   - 
   - Water
   - UI
-  - 
-  - 
-  - 
-  - 
+  - Collision 1
+  - Collision 2
+  - Collision 3
+  - Collision 4
   - 
   - 
   - 

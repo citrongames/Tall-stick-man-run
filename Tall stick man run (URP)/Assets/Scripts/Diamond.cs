@@ -16,6 +16,7 @@ public class Diamond : MonoBehaviour
     {
         _particle = GetComponentInChildren<ParticleSystem>();
         _model = GetComponentInChildren<MeshRenderer>();
+        _tmpText = GameObject.Find("TXTDiamonds").GetComponent<TextMeshProUGUI>();
     }
     public void Collect()
     {
