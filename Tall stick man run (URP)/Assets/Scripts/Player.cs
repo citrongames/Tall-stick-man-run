@@ -315,7 +315,7 @@ public class Player : MonoBehaviour
                     body.GetComponent<Rigidbody>().interpolation = RigidbodyInterpolation.Interpolate;   
                     body.layer = 9;                    
                 }
-                Barrier barrier = other.GetComponentInParent<Barrier>();
+                Enemy barrier = other.GetComponentInParent<Enemy>();
                 AddHeight(barrier.Damage / 2);
                 _secondCollision++;
                 break;

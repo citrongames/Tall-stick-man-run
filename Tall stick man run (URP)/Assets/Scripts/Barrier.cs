@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Barrier : MonoBehaviour
+public class Barrier : Enemy
 {
     [SerializeField] private bool _isMoving = false;
     [SerializeField] private float _movingSpeed = 0;
@@ -10,8 +10,6 @@ public class Barrier : MonoBehaviour
     private int _moveIndex = 0;
     private float _delta = 0.001f;
     private Collider _collider;
-    [SerializeField] private float _damage;
-    public float Damage {get => _damage;}
 
     void Start()
     {

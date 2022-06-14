@@ -3,15 +3,16 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using NewTypes;
+using UnityEngine.UI;
 
 public class Gate : MonoBehaviour
 {
-    [SerializeField] private string _title = "Default";
     [SerializeField] private GateModificatorType _type = GateModificatorType.Width;
     [SerializeField] private float _value = 0;
     [SerializeField] private bool _isMoving = false;
     [SerializeField] private float _movingSpeed = 0;
     [SerializeField] private List<Vector3> _movingPos = new List<Vector3>();
+    [SerializeField] private List<Image> _images = new List<Image>();
     private int _moveIndex = 0;
     private float _delta = 0.001f;
     public float Value 
@@ -25,7 +26,6 @@ public class Gate : MonoBehaviour
 
     private void Start() 
     {
-        TextMeshProUGUI titleTMP = null;
         TextMeshProUGUI insideTMP = null;
 
         TextMeshProUGUI[] texts = GetComponentsInChildren<TextMeshProUGUI>();
@@ -33,9 +33,6 @@ public class Gate : MonoBehaviour
         {
             switch(text.name)
             {
-                case "TXT_Title":
-                    titleTMP = text;
-                    break;
                 case "TXT_Inside":
                     insideTMP = text;
                     break;
@@ -43,8 +40,26 @@ public class Gate : MonoBehaviour
                     break;
             }
         }
+        //Image[] images = GetComponentsInChildren<Image>(true);
+        switch(_type)
+        {
+            case GateModificatorType.Width:
+                if (_value >= 0)
+                    _images[2].gameObject.SetActive(true);
+                else
+                    _images[3].gameObject.SetActive(true);
+                break;
+            case GateModificatorType.Height:
+                if (_value >= 0)
+                    _images[0].gameObject.SetActive(true);
+                else
+                    _images[1].gameObject.SetActive(true);
+                break;
+            default:
+                break;
+            }
 
-        titleTMP.text = _title;     
+
         insideTMP.text = (_value * 100).ToString("+#;-#;0");
     }
 
