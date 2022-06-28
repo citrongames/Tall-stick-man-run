@@ -182,36 +182,40 @@ public class LevelManager : MonoBehaviour
     private void TouchEvents(int touchId, Vector3 touchPos, TouchPhase touchPhase)
     {    
         _touchInfo.Phase = touchPhase;
+        _touchInfo.IsInteractableUI = false;
         switch (touchPhase)
         {
             case TouchPhase.Began:
                 _touchInfo.StartPos = Camera.main.ScreenToWorldPoint(new Vector3(touchPos.x, touchPos.y, Camera.main.farClipPlane)).normalized;
                 //Debug.Log("Start pos: " + _touchInfo.StartPos);
+                _touchInfo.IsInteractableUI = IsInteractable(touchPos);
                 break;
             case TouchPhase.Stationary:
             case TouchPhase.Moved:
                 _touchInfo.Direction = Camera.main.ScreenToWorldPoint(new Vector3(touchPos.x, touchPos.y, Camera.main.farClipPlane)).normalized - _touchInfo.StartPos;  
-                //Debug.Log("Move pos: " + _touchInfo.Direction);        
+                //Debug.Log("Move pos: " + _touchInfo.Direction);    
+                _touchInfo.IsInteractableUI = IsInteractable(touchPos);    
                 break;
             case TouchPhase.Ended:
-                
+                _touchInfo.IsInteractableUI = IsInteractable(touchPos);
                 break;
         }
-        
-        _touchInfo.IsInteractableUI = false;
+    }
+
+    private bool IsInteractable(Vector3 pos)
+    {
         PointerEventData pointerEventData = new PointerEventData(EventSystem.current);
-        pointerEventData.position = touchPos;
+        pointerEventData.position = pos;
         List<RaycastResult> raycastResults = new List<RaycastResult>();
         EventSystem.current.RaycastAll(pointerEventData, raycastResults);
         foreach(RaycastResult raycastResult in raycastResults)
         {
             if (raycastResult.gameObject.tag == "UI_Interactable")
             {
-                _touchInfo.IsInteractableUI = true;
+                return true;
             }
-        } 
-
-        
+        }
+        return false; 
     }
 
 }

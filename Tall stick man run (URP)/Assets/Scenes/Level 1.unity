@@ -146,7 +146,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &31459092
 Transform:
   m_ObjectHideFlags: 0
@@ -195,7 +195,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 9dd30c2ca91994b46982e4fdafad6be8, type: 2}
+  - {fileID: 2100000, guid: 72528282f4e10b04d87496a5db104801, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1026,6 +1026,10 @@ PrefabInstance:
     - target: {fileID: 4000158353772876299, guid: 759838d7ee9dadf45a35813cf8eb3c37, type: 3}
       propertyPath: m_Name
       value: Stickman
+      objectReference: {fileID: 0}
+    - target: {fileID: 4000158353772876299, guid: 759838d7ee9dadf45a35813cf8eb3c37, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4000158353772876300, guid: 759838d7ee9dadf45a35813cf8eb3c37, type: 3}
       propertyPath: m_RootOrder
